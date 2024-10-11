@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Debug
-        run: pwd && ls -l
+        run: ls -l
 
       - name: Get iDrive version
         id: version
