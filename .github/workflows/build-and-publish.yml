@@ -33,16 +33,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check for new base image
-        if: github.event_name != 'push'
-        id: check
-        uses: twiddler/is-my-docker-parent-image-out-of-date@v1
-        with:
-          parent-image: ubuntu:22.04
-          my-image: ghcr.io/${{ github.repository }}:latest
+      #- name: Check for new base image
+      #  if: github.event_name != 'push'
+      #  id: check
+      #  uses: twiddler/is-my-docker-parent-image-out-of-date@v1
+      #  with:
+      #    parent-image: ubuntu:22.04
+      #    my-image: ghcr.io/${{ github.repository }}:latest
 
       - name: Build image and push to GitHub Container Registry
-        if: github.event_name == 'push' || steps.check.outputs.out-of-date == 'true'
+        #  if: github.event_name == 'push' || steps.check.outputs.out-of-date == 'true'
         uses: docker/build-push-action@v6
         with:
           # relative path to the place where source code with Dockerfile is located
