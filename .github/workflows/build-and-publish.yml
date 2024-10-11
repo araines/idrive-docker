@@ -15,15 +15,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug
-        run: ls -l
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Get iDrive version
         id: version
         run: echo "IDRIVE_VERSION=$(./idrive/version.sh)" >> $GITHUB_OUTPUT
-
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         id: buildx
