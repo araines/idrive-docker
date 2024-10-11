@@ -25,7 +25,7 @@ jobs:
 
       - name: Get iDrive version
         id: version
-        run: echo "IDRIVE_VERSION=$(./version.sh)" >> $GITHUB_OUTPUT
+        run: echo "IDRIVE_VERSION=$(.github/version.sh)" >> $GITHUB_OUTPUT
 
       - name: Checkout code
         uses: actions/checkout@v3
