@@ -44,7 +44,8 @@ jobs:
       - name: Check for new version
         if: github.event_name != 'push'
         id: check-version
-        uses: javajawa/check-registry-for-image@v3
+        #uses: javajawa/check-registry-for-image@v3
+        uses: javajawa/check-registry-for-image@update-dependencies
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}
