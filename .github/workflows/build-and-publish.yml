@@ -33,5 +33,30 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find docker creds
-        run: cat ~/.docker/config.json
+      - name: Check for new base image
+        if: github.event_name != 'push'
+        id: check-base
+        uses: lucacome/docker-image-update-checker@v2.0.0
+        with:
+          base-image: ubuntu:24.04
+          image: ghcr.io/${{ github.repository }}:latest
+
+      - name: Check for new version
+        if: github.event_name != 'push'
+        id: check-version
+        uses: javajawa/check-registry-for-image@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          tag: ${{ steps.version.outputs.IDRIVE_VERSION }}
+
+      - name: Build image and push to GitHub Container Registry
+        if: github.event_name == 'push' || steps.check-base.outputs.needs-updating == 'true' || steps.check-version.outputs.exists == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: idrive/build
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.IDRIVE_VERSION }}
+          # build on feature branches, push only on main branch
+          push: ${{ github.ref == 'refs/heads/main' }}
