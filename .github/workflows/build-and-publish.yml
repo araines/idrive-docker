@@ -34,7 +34,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find docker creds
-        run: find . -name 'config.json'
-
-      - name: Env vars
-        run: printenv
+        run: find / -name 'config.json'
