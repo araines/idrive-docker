@@ -41,18 +41,14 @@ jobs:
           base-image: ubuntu:24.04
           image: ghcr.io/${{ github.repository }}:latest
 
-      - name: Get latest idrive tag
-        if: github.event_name != 'push'
-        id: get-idrive-tag
-        uses: sylvanld/action-search-docker-tag@v1
-        with:
-          image: ghcr.io/${{ github.repository }}
-          search: '\d+\.\d+\.\d+'
-
       - name: Check for new version
         if: github.event_name != 'push'
         id: check-version
-        run: echo "${{ steps.get-idrive-tag.outputs.tag }} == ${{ steps.version.outputs.IDRIVE_VERSION}}"
+        uses: tyriis/docker-image-tag-exists@v2.1.0
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          tag: ${{ steps.version.outputs.IDRIVE_VERSION }}
 
       #      - name: Check for new version
       #        if: github.event_name != 'push'
@@ -63,13 +59,13 @@ jobs:
       #          repository: ${{ github.repository }}
       #          tag: ${{ steps.version.outputs.IDRIVE_VERSION }}
 
-      # - name: Build image and push to GitHub Container Registry
-      #   if: github.event_name == 'push' || steps.check-base.outputs.needs-updating == 'true' || steps.check-version.outputs.exists == 'false'
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: idrive/build
-      #     tags: |
-      #       ghcr.io/${{ github.repository }}:latest
-      #       ghcr.io/${{ github.repository }}:${{ steps.version.outputs.IDRIVE_VERSION }}
-      #     # build on feature branches, push only on main branch
-      #     push: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build image and push to GitHub Container Registry
+        if: github.event_name == 'push' || steps.check-base.outputs.needs-updating == 'true' || steps.check-version.outputs.tag == 'not found'
+        uses: docker/build-push-action@v6
+        with:
+          context: idrive/build
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.IDRIVE_VERSION }}
+          # build on feature branches, push only on main branch
+          push: ${{ github.ref == 'refs/heads/main' }}
